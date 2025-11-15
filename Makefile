@@ -16,6 +16,9 @@ package-install:
 package-install-user:
 	python3 -m pip install --user dist/*.whl
 
+lint:
+	poetry run ruff check .
+
 activate:
 	@echo "Run this command to activate virtual environment:"
 	@echo "source $$(poetry env info --path)/bin/activate"
