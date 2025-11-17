@@ -88,7 +88,18 @@ class Player:
         else:
             return "Неправильный ответ. Попробуйте снова."
 
+    def get_stats(self) -> dict:
+        """Получить статистику игрока"""
 
+        from labyrinth_game.constants import ROOMS
+
+        return {
+            'current_room': self.current_room,
+            'inventory_count': len(self.inventory),
+            'solved_puzzles': len(self.solved_puzzles),
+            'total_puzzles': sum(1 for room in ROOMS.values() if room.get('puzzle')),
+            'total_rooms': len(ROOMS)
+        }
 def show_help() -> str:
     """Показать доступные команды и их описание"""
 
