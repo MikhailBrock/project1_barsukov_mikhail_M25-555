@@ -7,11 +7,17 @@ import math
 
 from labyrinth_game.constants import PUZZLE_ANSWERS, ROOMS
 
+#Константы
+EVENT_PROBABILITY = 10
+DAMAGE_THRESHOLD = 3
+EVENT_TYPES = 3
+RANDOM_SEED_MULTIPLIER_1 = 12.9898
+RANDOM_SEED_MULTIPLIER_2 = 43758.5453
 
 def pseudo_random(seed, modulo):
     """Генератор псевдослучайных чисел"""
     
-    x = math.sin(seed * 12.9898) * 43758.5453
+    x = math.sin(seed * RANDOM_SEED_MULTIPLIER_1) * RANDOM_SEED_MULTIPLIER_2
     fractional = x - math.floor(x)
     return math.floor(fractional * modulo)
 
@@ -30,8 +36,8 @@ def trigger_trap(game_state):
         print(f"Вы потеряли: {lost_item}!")
     else:
         # Игрок получает "урон"
-        damage_chance = pseudo_random(game_state['steps_taken'], 10)
-        if damage_chance < 3:
+        damage_chance = pseudo_random(game_state['steps_taken'], EVENT_PROBABILITY)
+        if damage_chance < DAMAGE_THRESHOLD:
             print("Вы получили смертельную травму! Игра окончена.")
             game_state['game_over'] = True
         else:
@@ -42,12 +48,12 @@ def random_event(game_state):
     """Случайное событие при перемещении"""
     
     # Проверяем, произойдет ли событие (10% вероятность)
-    event_chance = pseudo_random(game_state['steps_taken'], 10)
+    event_chance = pseudo_random(game_state['steps_taken'], EVENT_PROBABILITY)
     if event_chance != 0:
         return
     
     # Выбираем тип события
-    event_type = pseudo_random(game_state['steps_taken'] + 1, 3)
+    event_type = pseudo_random(game_state['steps_taken'] + 1, EVENT_TYPES)
     current_room = game_state['current_room']
     room_data = ROOMS.get(current_room, {})
     

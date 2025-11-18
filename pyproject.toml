@@ -2,7 +2,7 @@
 name = "project1-barsukov-mikhail-m25-555"
 version = "0.1.0"
 description = "Labyrinth game project"
-authors = ["Mikhail Barsukov <youremail@example.com>"]
+authors = ["Mikhail Barsukov <Mr.Brock63@yandex.ru>"]
 readme = "README.md"
 packages = [
     { include = "labyrinth_game" },
