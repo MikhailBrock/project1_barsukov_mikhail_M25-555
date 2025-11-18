@@ -3,6 +3,7 @@
 Главный модуль игры
 """
 
+from labyrinth_game.constants import DIRECTIONS
 from labyrinth_game.player_actions import (
     get_input,
     move_player,
@@ -28,6 +29,11 @@ def process_command(game_state, command_line):
     command = parts[0]
     argument = " ".join(parts[1:]) if len(parts) > 1 else ""
     
+    # Обработка односложных команд движения
+    if command in DIRECTIONS:
+        move_player(game_state, command)
+        return
+    
     match command:
         case "look":
             describe_current_room(game_state)
@@ -36,13 +42,13 @@ def process_command(game_state, command_line):
             if argument:
                 move_player(game_state, argument)
             else:
-                print("Укажите направление.")
+                print("Куда идти? Укажите направление.")
                 
         case "take":
             if argument:
                 take_item(game_state, argument)
             else:
-                print("Укажите предмет.")
+                print("Что взять? Укажите предмет.")
                 
         case "inventory":
             show_inventory(game_state)
@@ -51,7 +57,7 @@ def process_command(game_state, command_line):
             if argument:
                 use_item(game_state, argument)
             else:
-                print("Укажите предмет.")
+                print("Что использовать? Укажите предмет.")
                 
         case "solve":
             if game_state['current_room'] == 'treasure_room':

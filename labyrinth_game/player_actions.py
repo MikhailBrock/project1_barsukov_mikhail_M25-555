@@ -4,7 +4,7 @@
 """
 
 from labyrinth_game.constants import ROOMS
-from labyrinth_game.utils import describe_current_room
+from labyrinth_game.utils import describe_current_room, random_event
 
 
 def get_input(prompt="> "):
@@ -24,15 +24,29 @@ def move_player(game_state, direction):
     room_data = ROOMS.get(current_room, {})
     exits = room_data.get('exits', {})
     
-    if direction in exits:
-        # Обновляем текущую комнату
-        game_state['current_room'] = exits[direction]
-        # Увеличиваем счетчик шагов
-        game_state['steps_taken'] += 1
-        # Выводим описание новой комнаты
-        describe_current_room(game_state)
-    else:
+    if direction not in exits:
         print("Нельзя пойти в этом направлении.")
+        return
+    
+    next_room = exits[direction]
+    
+    # Проверка доступа в treasure_room
+    if next_room == 'treasure_room' and 'rusty_key' not in game_state['player_inventory']:
+        print("Дверь заперта. Нужен ключ, чтобы пройти дальше.")
+        return
+    elif next_room == 'treasure_room':
+        print("Вы используете найденный ключ, чтобы открыть путь в комнату сокровищ.")
+    
+    # Обновляем текущую комнату
+    game_state['current_room'] = next_room
+    # Увеличиваем счетчик шагов
+    game_state['steps_taken'] += 1
+    
+    # Выводим описание новой комнаты
+    describe_current_room(game_state)
+    
+    # Случайное событие
+    random_event(game_state)
 
 
 def take_item(game_state, item_name):
