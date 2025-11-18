@@ -1,110 +1,94 @@
 #!/usr/bin/env python3
+"""
+Действия игрока для игры
+"""
 
-from labyrinth_game.constants import DIRECTIONS, ROOMS
+from labyrinth_game.constants import ROOMS
+from labyrinth_game.utils import describe_current_room
 
 
-class Player:
-    """Класс игрока для отслеживания"""
+def get_input(prompt="> "):
+    """Получить ввод от пользователя"""
+    
+    try:
+        return input(prompt)
+    except (KeyboardInterrupt, EOFError):
+        print("\nВыход из игры.")
+        return "quit"
 
-    def __init__(self):
-        self.current_room = 'entrance'
-        self.inventory = []
-        self.solved_puzzles = set()
 
-    def move(self, direction: str) -> str:
-        """Переместить игрока в указанном направлении"""
+def move_player(game_state, direction):
+    """Переместить игрока в указанном направлении"""
+    
+    current_room = game_state['current_room']
+    room_data = ROOMS.get(current_room, {})
+    exits = room_data.get('exits', {})
+    
+    if direction in exits:
+        # Обновляем текущую комнату
+        game_state['current_room'] = exits[direction]
+        # Увеличиваем счетчик шагов
+        game_state['steps_taken'] += 1
+        # Выводим описание новой комнаты
+        describe_current_room(game_state)
+    else:
+        print("Нельзя пойти в этом направлении.")
 
-        if direction not in DIRECTIONS:
-            return f"Неверное направление: {direction}. Доступные направления: {', '.join(DIRECTIONS)}"
 
-        current_room_data = ROOMS.get(self.current_room, {})
-        exits = current_room_data.get('exits', {})
+def take_item(game_state, item_name):
+    """Взять предмет из комнаты"""
+    
+    current_room = game_state['current_room']
+    room_data = ROOMS.get(current_room, {})
+    items = room_data.get('items', [])
+    
+    # Проверка на сундук с сокровищами
+    if item_name == 'treasure_chest':
+        print("Вы не можете поднять сундук, он слишком тяжелый.")
+        return
+    
+    if item_name in items:
+        # Добавляем в инвентарь
+        game_state['player_inventory'].append(item_name)
+        # Удаляем из комнаты
+        items.remove(item_name)
+        print(f"Вы подняли: {item_name}")
+    else:
+        print("Такого предмета здесь нет.")
 
-        if direction in exits:
-            next_room = exits[direction]
-            self.current_room = next_room
-            return f"Вы идете {direction} в {next_room}."
+
+def show_inventory(game_state):
+    """Показать инвентарь игрока"""
+    
+    inventory = game_state['player_inventory']
+    if not inventory:
+        print("Ваш инвентарь пуст.")
+    else:
+        print("Ваш инвентарь:")
+        for item in inventory:
+            print(f"  - {item}")
+
+
+def use_item(game_state, item_name):
+    """Использовать предмет из инвентаря"""
+    
+    inventory = game_state['player_inventory']
+    
+    if item_name not in inventory:
+        print("У вас нет такого предмета.")
+        return
+    
+    # Уникальные действия для предметов
+    if item_name == 'torch':
+        print("Вы зажигаете факел. Стало светлее.")
+    elif item_name == 'sword':
+        print("Вы чувствуете себя увереннее с мечом в руках.")
+    elif item_name == 'bronze_box':
+        print("Вы открываете бронзовую шкатулку.")
+        if 'rusty_key' not in inventory:
+            inventory.append('rusty_key')
+            print("Внутри вы находите ржавый ключ!")
         else:
-            return f"Вы не можете пойти {direction} отсюда."
-
-    def look_around(self) -> str:
-        """Описание комнаты"""
-
-        room_data = ROOMS.get(self.current_room, {})
-        description = room_data.get('description', 'Неизвестная комната.')
-
-        exits = room_data.get('exits', {})
-        if exits:
-            exit_dirs = ', '.join(exits.keys())
-            description += f"\nВыходы: {exit_dirs}"
-
-        items = room_data.get('items', [])
-        if items:
-            items_list = ', '.join(items)
-            description += f"\nПредметы здесь: {items_list}"
-
-        puzzle = room_data.get('puzzle')
-        if puzzle and self.current_room not in self.solved_puzzles:
-            description += f"\n\nЗагадка: {puzzle[0]}"
-
-        return description
-
-    def take_item(self, item_name: str) -> str:
-        """Взять предмет из текущей комнаты"""
-
-        room_data = ROOMS.get(self.current_room, {})
-        items = room_data.get('items', [])
-
-        if item_name in items:
-            self.inventory.append(item_name)
-            items.remove(item_name)
-            return f"Вы берете {item_name}."
-        else:
-            return f"Здесь нет {item_name}."
-
-    def show_inventory(self) -> str:
-        """Показать инвентарь"""
-
-        if not self.inventory:
-            return "Ваш инвентарь пуст"
-        else:
-            return f"Инвентарь: {', '.join(self.inventory)}"
-
-    def solve_puzzle(self, answer: str) -> str:
-        """Попытаться решить загадку"""
-
-        if self.current_room in self.solved_puzzles:
-            return "Эта загадка уже решена."
-
-        room_data = ROOMS.get(self.current_room, {})
-        puzzle = room_data.get('puzzle')
-
-        if not puzzle:
-            return "В этой комнате нет загадки."
-
-        if answer.lower().strip() == puzzle[1].lower():
-            self.solved_puzzles.add(self.current_room)
-            return "Верно! Загадка решена."
-        else:
-            return "Неправильный ответ. Попробуйте снова."
-
-    def get_stats(self) -> dict:
-        """Получить статистику игрока"""
-
-        from labyrinth_game.constants import ROOMS
-
-        return {
-            'current_room': self.current_room,
-            'inventory_count': len(self.inventory),
-            'solved_puzzles': len(self.solved_puzzles),
-            'total_puzzles': sum(1 for room in ROOMS.values() if room.get('puzzle')),
-            'total_rooms': len(ROOMS)
-        }
-def show_help() -> str:
-    """Показать доступные команды и их описание"""
-
-    help_text = "Доступные команды:\n"
-    from labyrinth_game.constants import COMMANDS
-    for cmd, desc in COMMANDS.items():
-        help_text += f"  {cmd}: {desc}\n"
-    return help_text
+            print("Шкатулка пуста.")
+    else:
+        print(f"Вы не знаете, как использовать {item_name}.")
