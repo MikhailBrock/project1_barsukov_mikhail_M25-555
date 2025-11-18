@@ -71,7 +71,8 @@ def random_event(game_state):
                 
         case 2:
             # Ловушка
-            if current_room == 'trap_room' and 'torch' not in game_state['player_inventory']:
+            has_torch = 'torch' not in game_state['player_inventory']
+            if current_room == 'trap_room' and has_torch:
                 print("Вы чувствуете, как пол под ногами начинает двигаться...")
                 trigger_trap(game_state)
             else:

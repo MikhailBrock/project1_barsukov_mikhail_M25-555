@@ -31,7 +31,8 @@ def move_player(game_state, direction):
     next_room = exits[direction]
     
     # Проверка доступа в treasure_room
-    if next_room == 'treasure_room' and 'rusty_key' not in game_state['player_inventory']:
+    has_key = 'rusty_key' not in game_state['player_inventory']
+    if next_room == 'treasure_room' and has_key:
         print("Дверь заперта. Нужен ключ, чтобы пройти дальше.")
         return
     elif next_room == 'treasure_room':

@@ -73,7 +73,9 @@ def process_command(game_state, command_line):
             game_state['game_over'] = True
             
         case _:
-            print(f"Неизвестная команда: '{command}'. Введите 'help' для списка команд.")
+            message = f"Неизвестная команда: '{command}'. "
+            message += "Введите 'help' для списка команд."
+            print(message)
 
 
 def main():
