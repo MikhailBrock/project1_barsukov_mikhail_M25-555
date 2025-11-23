@@ -2,19 +2,36 @@
 
 Текстовая приключенческая игра в жанре interactive fiction. Игрок исследует таинственный лабиринт, решает загадки, собирает предметы и ищет спрятанное сокровище.
 
-## Клонирование репозитория
-git clone https://github.com/MikhailBrock/project1_barsukov_mikhail_M25-555.git
-cd project1_barsukov_mikhail_M25-555
 
-## Установка зависимостей
-make install
+## Структура проекта:
 
-## Сборка и установка пакета
-make build
-make package-install
+labyrinth_game/
+├── main.py           # Точка входа и игровой цикл
+├── constants.py      # Данные игры (комнаты, команды)
+├── player_actions.py # Действия игрока
+└── utils.py          # Вспомогательные функции
 
-## Запуск игры
-project
+
+## Установка:
+
+    make install      # Установка зависимостей
+    
+    make lint         # Проверка стиля кода
+    
+    make build        # Сборка пакета
+    
+    make publish      # Тестовая публикация
+    
+    make clean        # Очистка временных файлов
+
+
+## Технологии
+
+    Python 3.8+
+
+    Poetry 1.8.0+
+
+    Ruff (для проверки кода)
 
 
 # Игровой процесс
@@ -64,37 +81,13 @@ project
 
     Сокровищница (treasure_room) - финальная комната с сундуком
 
-# Разработка
-### Команды для разработчиков:
-bash
-
-make install      # Установка зависимостей
-make lint         # Проверка стиля кода
-make build        # Сборка пакета
-make publish      # Тестовая публикация
-make clean        # Очистка временных файлов
-
-### Структура проекта:
-text
-
-labyrinth_game/
-├── main.py           # Точка входа и игровой цикл
-├── constants.py      # Данные игры (комнаты, команды)
-├── player_actions.py # Действия игрока
-└── utils.py          # Вспомогательные функции
 
 ## Демонстрация
-https://asciinema.org/connect/569ebe1b-de5f-4600-bd22-7731d4a88d44
+
+https://asciinema.org/a/nH1kfEXA4v5fVkQkfzNorwbxG
 
 *или файл "demo.cast"
 
-### Требования
-
-    Python 3.8+
-
-    Poetry 1.8.0+
-
-    Ruff (для проверки кода)
 
 ## Автор
 
